@@ -6,8 +6,11 @@ let backgroundDos;
 let player;
 let enemy;
 let cursors;
-let background;
-let backgroundDos;
+let spaceBar;
+let bullet=[];
+let contBullet=0;
+let frame=-1;
+
 
 
 /**
@@ -41,6 +44,9 @@ function create() {
 
   //cursors map into game engine
   cursors = this.input.keyboard.createCursorKeys();
+
+  //map space key status
+  spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 }
 
 /**
@@ -49,6 +55,30 @@ function create() {
 function update() {
   moverPlayer();
   moverFondo();
+  if(frame<0){
+    disparar(this);
+  }
+  if (contBullet>0){
+    moverBala();
+  }
+  frame--;
+}
+
+function disparar(engine){
+  if(spaceBar.isDown){
+    bullet.push(engine.add.ellipse(player.x, player.y - player.height/2 * PLAYER_SCALE -5, 5, 10, 0xf5400a))
+    contBullet++;
+    frame = 10;
+  }
+}
+
+function moverBala(){
+  for (let bala of bullet){
+    bala.setY(bala.y - BULLET_VELOCITY)
+    if (bala.y < 0){ //para q desaparezca la bala por la parte superior
+      bala.destroy()
+    }
+  }
 }
 
 function moverFondo(){
