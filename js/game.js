@@ -1,11 +1,14 @@
 /**
  * Variables used during the game.
  */
+let background;
+let backgroundDos;
 let player;
 let enemy;
 let cursors;
 let background;
 let backgroundDos;
+
 
 /**
  * It prelaods all the assets required in the game.
