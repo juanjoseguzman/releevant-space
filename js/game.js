@@ -9,6 +9,7 @@ let cursors;
 let spaceBar;
 let bullets = [];
 let elapsedFrames;
+let explosion;
 
 /**
  * It prelaods all the assets required in the game.
@@ -17,6 +18,7 @@ function preload() {
   this.load.image("sky", "assets/backgrounds/blue.png");
   this.load.image("player", "assets/characters/player.png");
   this.load.image("enemy", "assets/characters/alien1.png");
+  this.load.image("red", "assets/particles/red.png");
 }
 
 /**
@@ -46,12 +48,24 @@ function create() {
   spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
   elapsedFrames = FRAMES_PER_BULLET;
+
+  explosion = this.add.particles("red").createEmitter({
+    scale: { min: 0.5, max: 0 },
+    speed: { min: -100, max: 100 },
+    quantity: 10,
+    frequency: 0.1,
+    lifespan: 200,
+    gravityY: 0,
+    on: false,
+  });
 }
 
 /**
  * Updates each game object of the scene.
  */
 function update() {
+  checkEnemyCollisions();
+
   moverFondo();
   moverPlayer();
   moverBalas();
@@ -118,10 +132,21 @@ function moverBalas() {
     bullets[index].setY(bullets[index].y - BULLET_VELOCITY);
 
     if (bullets[index].y < 0) {
-      bullets[index].destroy();
-      bullets.splice(index, 1);
+      destroyBullet(index);
     } else {
-      index++;
+      const enemyHalfWidth = enemy.width / 2 * ENEMY_SCALE;
+      const enemyHalfHeight = enemy.height / 2 * ENEMY_SCALE;
+
+      if ((bullets[index].x > (enemy.x - enemyHalfWidth) && bullets[index].x < (enemy.x + enemyHalfWidth)) 
+          && (bullets[index].y < (enemy.y + enemyHalfHeight) && (bullets[index].y > (enemy.y - enemyHalfHeight)))){
+        explosion.setPosition(enemy.x, enemy.y);
+        explosion.explode();
+
+        enemy.destroy();
+        destroyBullet(index);
+      } else {
+        index++;
+      }
     }
   }
 }
@@ -132,4 +157,20 @@ function disparar(engine) {
 
     elapsedFrames = FRAMES_PER_BULLET;
   }
+}
+
+function checkEnemyCollisions() {
+  for (const b of bullets) {
+    const enemyHalfWidth = enemy.width / 2 * ENEMY_SCALE;
+    const enemyHalfHeight = enemy.height / 2 * ENEMY_SCALE;
+
+    if ((b.x > (enemy.x - enemyHalfWidth) && b.x < (enemy.x + enemyHalfWidth)) && (b.y < (enemy.y + enemyHalfHeight) && (b.y > (enemy.y - enemyHalfHeight)))){
+      enemy.destroy();
+    }
+  }
+}
+
+function destroyBullet(index) {
+  bullets[index].destroy();
+  bullets.splice(index, 1);
 }
