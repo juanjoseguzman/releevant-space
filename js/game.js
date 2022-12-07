@@ -1,6 +1,8 @@
 /**
  * Variables used during the game.
  */
+let background;
+let backgroundDos;
 let player;
 let enemy;
 let cursors;
@@ -19,7 +21,8 @@ function preload() {
  */
 function create() {
   // scene background
-  this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, "sky");
+  background = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, "sky");
+  backgroundDos = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - background.height, "sky")
 
   // playet setup
   player = this.add.image(SCREEN_WIDTH / 2, SCREEN_HEIGHT, "player");
@@ -41,7 +44,21 @@ function create() {
  * Updates each game object of the scene.
  */
 function update() {
+  moverFondo();
   moverPlayer();
+}
+
+function moverFondo() {
+  background.setY(background.y + BACKGROUND_VELOCITY);
+  backgroundDos.setY(backgroundDos.y + BACKGROUND_VELOCITY);
+
+  if (background.y > background.height + SCREEN_HEIGHT / 2) {
+    background.setY(backgroundDos.y - background.height);
+
+    let temporal = background;
+    background = backgroundDos;
+    backgroundDos = temporal;
+  }
 }
 
 function moverPlayer() {
