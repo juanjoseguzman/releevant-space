@@ -6,6 +6,9 @@ let backgroundDos;
 let player;
 let enemy;
 let cursors;
+let spaceBar;
+let bullets = [];
+let elapsedFrames;
 
 /**
  * It prelaods all the assets required in the game.
@@ -38,6 +41,11 @@ function create() {
 
   //cursors map into game engine
   cursors = this.input.keyboard.createCursorKeys();
+
+  // map space key status
+  spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+  elapsedFrames = FRAMES_PER_BULLET;
 }
 
 /**
@@ -46,6 +54,10 @@ function create() {
 function update() {
   moverFondo();
   moverPlayer();
+  moverBalas();
+  disparar(this);
+
+  elapsedFrames--;
 }
 
 function moverFondo() {
@@ -96,5 +108,28 @@ function moverPlayer() {
     }
     
     player.setY(y);
+  }
+}
+
+function moverBalas() {
+  let index = 0;
+
+  while (index < bullets.length) {
+    bullets[index].setY(bullets[index].y - BULLET_VELOCITY);
+
+    if (bullets[index].y < 0) {
+      bullets[index].destroy();
+      bullets.splice(index, 1);
+    } else {
+      index++;
+    }
+  }
+}
+
+function disparar(engine) {
+  if (spaceBar.isDown && elapsedFrames < 0) {
+    bullets.push(engine.add.ellipse(player.x, player.y - player.height / 2 * PLAYER_SCALE - 5, 5, 10, 0xf5400a));
+
+    elapsedFrames = FRAMES_PER_BULLET;
   }
 }
