@@ -8,8 +8,11 @@ let enemy;
 let cursors;
 let spaceBar;
 let bullet=[];
-let contBullet=0;
-let frame=-1;
+let contBullet = 0;
+let frame = -1;
+let contador = -1;
+let score = 0;
+let scoreText;
 
 
 
@@ -47,7 +50,12 @@ function create() {
 
   //map space key status
   spaceBar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+  //Texto Score
+  scoreText = this.add.text(5, 5, "Score: "+ score);//Texto Score
 }
+
+
 
 /**
  * Updates each game object of the scene.
@@ -62,6 +70,26 @@ function update() {
     moverBala();
   }
   frame--;
+  contador--;
+}
+
+function puntuacion(){
+  contador = 5;
+  score+=10;
+  scoreText.setText("Score: " +score)
+}
+
+function colision(bala){
+  if ((bala.x>=enemy.x-(enemy.width * ENEMY_SCALE)/2 && 
+    bala.x<=enemy.x+(enemy.width * ENEMY_SCALE)/2) &&
+    (bala.y>=enemy.y-(enemy.height * ENEMY_SCALE)/2 &&
+    bala.y<=enemy.y+(enemy.height * ENEMY_SCALE)/2)){
+    if (contador < 0){
+      puntuacion()
+    }
+    enemy.setX(Math.floor(Math.random()*(SCREEN_WIDTH - enemy.width)+enemy.width/2));
+    bala.destroy();
+  }
 }
 
 function disparar(engine){
@@ -78,6 +106,7 @@ function moverBala(){
     if (bala.y < 0){ //para q desaparezca la bala por la parte superior
       bala.destroy()
     }
+    colision(bala);
   }
 }
 
