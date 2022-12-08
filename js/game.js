@@ -23,6 +23,7 @@ function preload() {
   this.load.image("sky", "assets/backgrounds/blue.png");
   this.load.image("player", "assets/characters/player.png");
   this.load.image("enemy", "assets/characters/alien1.png");
+  this.load.image("red", "assets/particles/red.png");
 }
 
 /**
